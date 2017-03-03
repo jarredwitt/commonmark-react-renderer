@@ -399,7 +399,9 @@ describe('react-markdown', function() {
             }
         }).replace(/&quot;/g, '"')).to.equal([
             '<div class="level-1">Header</div><hr/><p>Paragraph a day...</p>',
-            '<pre>{"language":"js","literal":"var keepTheDoctor = \\"away\\";\\n","nodeKey":"4:1-6:27"}</pre>',
+            '<pre>',
+            '{"language":"js","literal":"var keepTheDoctor = \\"away\\";\\n","context":[],"nodeKey":"4:1-6:27"}',
+            '</pre>',
             '<blockquote><p>Foo</p></blockquote>'
         ].join(''));
     });
@@ -573,6 +575,100 @@ describe('react-markdown', function() {
         it('should pass data sourcepos prop if configured', function() {
             expect(parse('# Foo\n---\nBar', { sourcePos: true }))
                 .to.contain('<hr data-sourcepos="2:1-2:3"/>');
+        });
+    });
+
+    describe('should pass context to text renderer in props', function() {
+        var opts = {
+            renderers: {
+                Text: function(props) {
+                    return React.createElement('span', {'data-context': props.context.join(',')}, props.literal);
+                }
+            }
+        };
+
+        it('should pass paragraph context into text renderer', function() {
+            expect(parse('abc', opts)).to.contain('<span data-context="paragraph">abc</span>');
+        });
+
+        it('should pass *emph* context into text renderer', function() {
+            expect(parse('*abc*', opts)).to.contain('<span data-context="paragraph,emph">abc</span>');
+        });
+
+        it('should pass _emph_ context into text renderer', function() {
+            expect(parse('_abc_', opts)).to.contain('<span data-context="paragraph,emph">abc</span>');
+        });
+
+        it('should pass **strong** context into text renderer', function() {
+            expect(parse('**abc**', opts)).to.contain('<span data-context="paragraph,strong">abc</span>');
+        });
+
+        it('should pass __strong__ context into text renderer', function() {
+            expect(parse('__abc__', opts)).to.contain('<span data-context="paragraph,strong">abc</span>');
+        });
+
+        it('should pass link context into text renderer', function() {
+            expect(parse('[abc](http://example.com/abc)', opts)).to.contain(
+                '<span data-context="paragraph,link">abc</span>'
+            );
+        });
+
+        it('should pass one-element list context into text renderer', function() {
+            expect(parse('* abc', opts)).to.contain('<span data-context="list,item">abc</span>');
+        });
+
+        it('should pass three-element list context into text renderer', function() {
+            expect(parse('* abc\n* def\n*hij', opts)).to.contain(
+                '<span data-context="list,item">abc</span>'
+            ).and.contain(
+                '<span data-context="list,item">def</span>'
+            ).and.contain(
+                '<span data-context="list,item">hij</span>'
+            );
+        });
+
+        it('should pass nested list context into text renderer', function() {
+            expect(parse('* * abc\n* def', opts)).to.contain(
+                '<span data-context="list,item,list,item">abc</span>'
+            ).and.contain(
+                '<span data-context="list,item">def</span>'
+            );
+        });
+
+        it('should pass loose list context into text renderer', function() {
+            expect(parse('* abc\n\n* def', opts)).to.contain(
+                '<span data-context="list,item,paragraph">abc</span>'
+            ).and.contain(
+                '<span data-context="list,item,paragraph">def</span>'
+            );
+        });
+
+        it('should pass blockquote context into text renderer', function() {
+            expect(parse('> abc', opts)).to.contain('<span data-context="block_quote,paragraph">abc</span>');
+        });
+
+        it('should pass nested blockquote context into text renderer', function() {
+            expect(parse('> > abc', opts)).to.contain(
+                '<span data-context="block_quote,block_quote,paragraph">abc</span>'
+            );
+        });
+
+        it('should pass multiple contexts into text renderer', function() {
+            expect(parse('1. abc\n\n*def*', opts)).to.contain(
+                '<span data-context="list,item">abc</span>'
+            ).and.contain(
+                '<span data-context="paragraph,emph">def</span>'
+            );
+        });
+
+        it('should pass complicated context into text renderer', function() {
+            expect(parse('> 1. * *def[__abc__](http://example.com/abc)*\n> 2. hij\n>\n> klm', opts)).to.contain(
+                '<span data-context="block_quote,list,item,list,item,emph,link,strong">abc</span>'
+            ).and.contain(
+                '<span data-context="block_quote,list,item,list,item,emph">def</span>'
+            ).and.contain(
+                '<span data-context="block_quote,paragraph">klm</span>'
+            );
         });
     });
 });

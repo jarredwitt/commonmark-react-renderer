@@ -130,7 +130,7 @@ function flattenPosition(pos) {
 }
 
 // For some nodes, we want to include more props than for others
-function getNodeProps(node, key, opts, renderer) {
+function getNodeProps(node, key, opts, renderer, context) {
     var props = { key: key }, undef;
 
     // `sourcePos` is true if the user wants source information (line/column info from markdown source)
@@ -195,6 +195,8 @@ function getNodeProps(node, key, opts, renderer) {
         props.children = children.reduce(reduceChildren, []) || null;
     }
 
+    props.context = context.slice();
+
     return props;
 }
 
@@ -230,7 +232,7 @@ function renderNodes(block) {
         linkTarget: this.linkTarget
     };
 
-    var e, node, entering, leaving, type, doc, key, nodeProps, prevPos, prevIndex = 0;
+    var e, node, entering, leaving, type, doc, key, nodeProps, prevPos, prevIndex = 0, context = [];
     while ((e = walker.next())) {
         var pos = getPosition(e.node.sourcepos ? e.node : e.node.parent);
         if (prevPos === pos) {
@@ -278,13 +280,28 @@ function renderNodes(block) {
         if (this.allowNode && (isCompleteParent || !node.isContainer)) {
             var nodeChildren = isCompleteParent ? node.react.children : [];
 
-            nodeProps = getNodeProps(node, key, propOptions, renderer);
+            nodeProps = getNodeProps(node, key, propOptions, renderer, context);
             disallowedByUser = !this.allowNode({
                 type: pascalCase(type),
                 renderer: this.renderers[type],
                 props: nodeProps,
                 children: nodeChildren
             });
+        }
+
+        if (node.isContainer) {
+            if (entering) {
+                context.push(node.type);
+            } else {
+                var popped = context.pop();
+
+                if (!popped) {
+                    throw new Error('Attempted to pop empty stack');
+                } else if (popped !== node.type) {
+                    throw new Error('Popped context of type `' + pascalCase(popped) +
+                        '` when expecting context of type `' + pascalCase(node.type) + '`');
+                }
+            }
         }
 
         if (!isDocument && (disallowedByUser || disallowedByConfig)) {
@@ -309,7 +326,7 @@ function renderNodes(block) {
                 children: []
             };
         } else {
-            var childProps = nodeProps || getNodeProps(node, key, propOptions, renderer);
+            var childProps = nodeProps || getNodeProps(node, key, propOptions, renderer, context);
             if (renderer) {
                 childProps = typeof renderer === 'string'
                     ? childProps
@@ -322,6 +339,10 @@ function renderNodes(block) {
                 addChild(node, softBreak);
             }
         }
+    }
+
+    if (context.length !== 0) {
+        throw new Error('Expected context to be empty after rendering, but has `' + context.join(', ') + '`');
     }
 
     return doc.react.children;
