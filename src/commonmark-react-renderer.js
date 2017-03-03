@@ -291,13 +291,13 @@ function renderNodes(block) {
 
         if (node.isContainer) {
             if (entering) {
-                context.push(node.type);
+                context.push(node.level ? node.type + node.level : node.type);
             } else {
                 var popped = context.pop();
 
                 if (!popped) {
                     throw new Error('Attempted to pop empty stack');
-                } else if (popped !== node.type) {
+                } else if (!popped.startsWith(node.type)) {
                     throw new Error('Popped context of type `' + pascalCase(popped) +
                         '` when expecting context of type `' + pascalCase(node.type) + '`');
                 }

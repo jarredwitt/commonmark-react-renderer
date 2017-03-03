@@ -607,6 +607,30 @@ describe('react-markdown', function() {
             expect(parse('__abc__', opts)).to.contain('<span data-context="paragraph,strong">abc</span>');
         });
 
+        it('should pass h1 context into text renderer', function() {
+            expect(parse('# abc', opts)).to.contain('<span data-context="heading1">abc</span>');
+        });
+
+        it('should pass h2 context into text renderer', function() {
+            expect(parse('## abc', opts)).to.contain('<span data-context="heading2">abc</span>');
+        });
+
+        it('should pass h3 context into text renderer', function() {
+            expect(parse('### abc', opts)).to.contain('<span data-context="heading3">abc</span>');
+        });
+
+        it('should pass h4 context into text renderer', function() {
+            expect(parse('#### abc', opts)).to.contain('<span data-context="heading4">abc</span>');
+        });
+
+        it('should pass h5 context into text renderer', function() {
+            expect(parse('##### abc', opts)).to.contain('<span data-context="heading5">abc</span>');
+        });
+
+        it('should pass h6 context into text renderer', function() {
+            expect(parse('###### abc', opts)).to.contain('<span data-context="heading6">abc</span>');
+        });
+
         it('should pass link context into text renderer', function() {
             expect(parse('[abc](http://example.com/abc)', opts)).to.contain(
                 '<span data-context="paragraph,link">abc</span>'
