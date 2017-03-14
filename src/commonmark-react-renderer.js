@@ -327,7 +327,12 @@ function renderNodes(block) {
             };
         } else {
             var childProps = nodeProps || getNodeProps(node, key, propOptions, renderer, context);
-            if (renderer) {
+            if (renderer === ReactRenderer.forwardChildren) {
+                for (var i = 0; i < childProps.children.length; i++) {
+                    var child = childProps.children[i];
+                    addChild(node, child);
+                }
+            } else if (renderer) {
                 childProps = typeof renderer === 'string'
                     ? childProps
                     : assign(childProps, {nodeKey: childProps.key});
@@ -415,11 +420,16 @@ function ReactRenderer(options) {
     };
 }
 
+function forwardChildren(props) {
+    return props.children;
+}
+
 ReactRenderer.uriTransformer = defaultLinkUriFilter;
 ReactRenderer.types = coreTypes.map(pascalCase);
 ReactRenderer.renderers = coreTypes.reduce(function(renderers, type) {
     renderers[pascalCase(type)] = defaultRenderers[type];
     return renderers;
 }, {});
+ReactRenderer.forwardChildren = forwardChildren;
 
 module.exports = ReactRenderer;
