@@ -261,7 +261,7 @@ function renderNodes(block) {
         }
 
         // In HTML, we don't want paragraphs inside of list items
-        if (type === 'paragraph' && isGrandChildOfList(node)) {
+        if (!this.renderParagraphsInLists && type === 'paragraph' && isGrandChildOfList(node)) {
             continue;
         }
 
@@ -410,6 +410,7 @@ function ReactRenderer(options) {
         renderers: assign({}, defaultRenderers, normalizeRenderers(opts.renderers)),
         escapeHtml: Boolean(opts.escapeHtml),
         skipHtml: Boolean(opts.skipHtml),
+        renderParagraphsInLists: Boolean(opts.renderParagraphsInLists),
         transformLinkUri: linkFilter,
         transformImageUri: imageFilter,
         allowNode: opts.allowNode,
