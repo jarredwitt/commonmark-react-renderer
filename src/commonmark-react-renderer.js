@@ -176,7 +176,6 @@ function getNodeProps(node, key, opts, renderer, context) {
 
             // Commonmark treats image description as children. We just want the text
             props.alt = node.react.children.join('');
-            node.react.children = undef;
             break;
         case 'list':
             props.start = node.listStart;
