@@ -12,7 +12,8 @@ var typeAliases = {
     htmlblock: 'html_block',
     htmlinline: 'html_inline',
     codeblock: 'code_block',
-    hardbreak: 'linebreak'
+    hardbreak: 'linebreak',
+    atmention: 'at_mention'
 };
 
 var defaultRenderers = {
@@ -52,7 +53,9 @@ var defaultRenderers = {
     },
 
     text: null,
-    softbreak: null
+    softbreak: null,
+
+    at_mention: null
 };
 
 var coreTypes = Object.keys(defaultRenderers);
@@ -181,6 +184,9 @@ function getNodeProps(node, key, opts, renderer, context) {
             props.start = node.listStart;
             props.type = node.listType;
             props.tight = node.listTight;
+            break;
+        case 'at_mention':
+            props.mentionName = node.mentionName;
             break;
         default:
     }
