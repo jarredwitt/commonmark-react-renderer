@@ -55,7 +55,8 @@ var defaultRenderers = {
     text: null,
     softbreak: null,
 
-    at_mention: null
+    at_mention: null,
+    emoji: null
 };
 
 var coreTypes = Object.keys(defaultRenderers);
@@ -187,6 +188,10 @@ function getNodeProps(node, key, opts, renderer, context) {
             break;
         case 'at_mention':
             props.mentionName = node.mentionName;
+            break;
+        case 'emoji':
+            props.emojiName = node.emojiName;
+            props.literal = node.literal;
             break;
         default:
     }
