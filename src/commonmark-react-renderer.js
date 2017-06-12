@@ -56,6 +56,7 @@ var defaultRenderers = {
     softbreak: null,
 
     at_mention: null,
+    channel_link: null,
     emoji: null
 };
 
