@@ -13,7 +13,8 @@ var typeAliases = {
     htmlinline: 'html_inline',
     codeblock: 'code_block',
     hardbreak: 'linebreak',
-    atmention: 'at_mention'
+    atmention: 'at_mention',
+    channellink: 'channel_link'
 };
 
 var defaultRenderers = {
@@ -189,6 +190,9 @@ function getNodeProps(node, key, opts, renderer, context) {
             break;
         case 'at_mention':
             props.mentionName = node.mentionName;
+            break;
+        case 'channel_link':
+            props.channelName = node.channelName;
             break;
         case 'emoji':
             props.emojiName = node.emojiName;
