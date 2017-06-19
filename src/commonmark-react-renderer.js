@@ -198,6 +198,10 @@ function getNodeProps(node, key, opts, renderer, context) {
             props.emojiName = node.emojiName;
             props.literal = node.literal;
             break;
+        case 'paragraph':
+            props.first = !(node._prev && node._prev.type === 'paragraph');
+            props.last = !(node._next && node._next.type === 'paragraph');
+            break;
         default:
     }
 
