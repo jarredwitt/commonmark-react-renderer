@@ -26,6 +26,7 @@ var defaultRenderers = {
     link: 'a',
     paragraph: 'p',
     strong: 'strong',
+    del: 'del',
     thematic_break: 'hr', // eslint-disable-line camelcase
 
     html_block: HtmlRenderer, // eslint-disable-line camelcase
