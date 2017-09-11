@@ -254,6 +254,7 @@ function renderNodes(block) {
         escapeHtml: this.escapeHtml,
         skipHtml: this.skipHtml,
         transformLinkUri: this.transformLinkUri,
+        transformLinkTitle: this.transformLinkTitle,
         transformImageUri: this.transformImageUri,
         softBreak: softBreak,
         linkTarget: this.linkTarget
