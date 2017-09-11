@@ -176,7 +176,10 @@ function getNodeProps(node, key, opts, renderer, context) {
             break;
         case 'link':
             props.href = opts.transformLinkUri ? opts.transformLinkUri(node.destination) : node.destination;
-            props.title = node.title ? (opts.transformLinkTitle ? opts.transformLinkTitle(node.title) : node.title) : undef;
+            props.title = node.title || undef;
+            if (opts.transformLinkTitle) {
+                props.title = opts.transformLinkTitle(node.title, props.href)
+            }
             if (opts.linkTarget) {
                 props.target = opts.linkTarget;
             }
