@@ -436,6 +436,7 @@ function ReactRenderer(options) {
         skipHtml: Boolean(opts.skipHtml),
         renderParagraphsInLists: Boolean(opts.renderParagraphsInLists),
         transformLinkUri: linkFilter,
+        transformLinkTitle: opts.transformLinkTitle || false,
         transformImageUri: imageFilter,
         allowNode: opts.allowNode,
         allowedTypes: allowedTypes,
